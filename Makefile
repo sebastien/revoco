@@ -1,5 +1,15 @@
-VERSION=0.3
-MX_REVOLUTION=`lsusb | grep "MX Revolution" | cut -d' ' -f6 | cut -d':' -f2`
-all:
-	gcc -c revoco.c -DVERSION='"$(VERSION)"' -DMX_REVOLUTION=0x$(MX_REVOLUTION)
-	gcc revoco.o -o revoco
+V=0.5
+CFLAGS=-Os -DVERSION=\"$(V)\" -Wall
+LDFLAGS=-s
+
+revoco: revoco.o
+
+clean:
+	rm -f revoco revoco.o a.out
+
+tag:
+	git tag v$(V)
+
+tar:
+	git tar-tree v$(V) revoco-$(V) | gzip -9 >revoco-$(V).tar.gz
+
