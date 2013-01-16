@@ -1,4 +1,4 @@
-V=0.5
+V=0.6
 CFLAGS=-Os -DVERSION=\"$(V)\" -Wall
 LDFLAGS=-s
 
