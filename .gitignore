@@ -1,0 +1,8 @@
+*.tar
+*.tar.gz
+*.o
+old
+revoco
+pkt.gif
+revoco.lsm
+show-rep.c
