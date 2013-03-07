@@ -1,6 +1,130 @@
+```
 == Revoco
 == MX revolution control for Linux
+``` 
 
+
+About
+-----
+
+A command-line tool to setup the Logitech MX Revolution mouse
+buttons behavior under Linux
+
+Install
+-------
+
+```
+$ make
+$ ./revoco
+Revoco v0.6 - Change the wheel behaviour of Logitech's MX-Revolution mouse.
+
+Usage:
+  revoco free                      free spinning mode
+  revoco click                     click-to-click mode
+  revoco manual[=button[,button]]  manual mode change via button
+  revoco auto[=speed[,speed]]      automatic mode change (up, down)
+  revoco battery                   query battery status
+  revoco mode                      query scroll wheel mode
+  revoco reconnect                 initiate reconnection
+
+Prefixing the mode with 'temp-' (i.e. temp-free) switches the mode
+temporarily, otherwise it becomes the default mode after power up.
+
+Button numbers:
+  0 previously set button   7 wheel left tilt
+  3 middle (wheel button)   8 wheel right tilt
+  4 rear thumb button       9 thumb wheel forward
+  5 front thumb button     11 thumb wheel backward
+  6 find button            13 thumb wheel pressed
+```
 References
-- <http://planet.gentoo.org/developers/betelgeuse/2006/11/26/getting_mx_revolution_setup_in_gentoo>
-- 
+----------
+
+Note: this is copy/paste http://blogs.gentoo.org/betelgeuse/2006/11/26/getting_mx_revolution_setup_in_gentoo/
+
+```
+== Getting MX Revolution setup in Gentoo
+== Posted on November 26, 2006 by betelgeuse
+```
+
+I recently bought a Logitech MX Revolution mouse. This is a very nice cordless
+laser mouse with plenty of buttons. See Gizmodo review for pictures. As usual I
+first googled to find what others have done to get everything working with this
+mouse. Of course the usual functionality was there without anything special.
+
+The first link Google gave me was
+http://andy.hillhome.org/blog/2006/09/27/logitech-mx-revolution-in-linux/ Based
+on this information I set out to setup my new mouse. First I changed my
+xorg.conf to have the following:
+
+```
+Section "InputDevice"
+		Identifier  "Mx Rev"
+		Driver      "evdev"
+		Option      "Protocol"  "Auto"
+		Option      "Name"      "Logitech USB Receiver"
+		Option      "Phys"      "usb-*/input0
+EndSection
+```
+
+This gives evdev control of my mouse and still keeps my other stuff working
+using the normal /dev/mice/input. This at least makes it possible to control
+this mouse specifically if I need to. The hotplug input framework should
+hopefully make this kind of stuff obsolete in the future.
+
+Having evdev working and handling the mouse I got xev to recognize all my mouse
+buttons nicely. I have been using imwheel with my previous mouses and have
+found it an able tool to map mouse events to keyboard events. Here is my
+`.imwheelrc`:
+
+```
+"Firefox"
+None, Thumb1, Alt_L|Left
+None, Thumb2, Alt_L|Right
+None, Left, Control_L|W
+None, Right, Control_L|T
+
+"Thunderbird"
+None, Thumb1, N
+None, Thumb2, B
+
+"Konsole"
+None, Thumb1, Shift_L|Right
+None, Thumb2, Shift_L|Left
+```
+
+What this does:
+
+- Makes back/forward work in Firefox with Thumb buttons
+- Makes creating/deleting tabs work by tilting the scroll wheel
+- Makes Thunderbird go to next unread message / previous message using Thumb buttons
+- Makes Konsole change tabs using Thumb buttons
+
+Using the same pattern you should be able to adjust the rest of the buttons to
+your liking. I will probably look into using the Thumb wheel to control beryl.
+
+The last thing I didn’t like about the default behavior of the MX in Linux was
+the scroll wheel. By default it is in the Free-spin mode which means that
+clicking the wheel does not generate Button2 events. I found a handy tool to
+control the features of this mouse in the comments of that blog post and I made
+an ebuild for it
+http://overlays.gentoo.org/svn/dev/betelgeuse/app-misc/revoco/. Using this tool
+I can just issue revoco manual=6 and after that I can use the One-Touch Search
+button to change the scrolling mode of the mouse. I don’t know yet if this is
+good enough for the main tree as it atm must be run setuid because of default
+/dev/usb/hiddevN permissions. Will probably add it if I find the time to
+rewrite it using libhid.
+
+The final touch to glue all this together is to have my .xprofile start the necessary programs for me:
+
+```
+revoco manual=6
+#xmodmap -e "keycode 122 = XF86Search"
+/usr/bin/imwheel -k -b "007689"
+```
+
+Notice that you can use xmodmap to map the One-Touch search to XF86Search if
+you like. It’s quite weird how the button is handled. To the OS it is shown as
+a keyboard with one button. Well engineers are creative.
+
+# EOF
