@@ -64,6 +64,7 @@
 #define LOGITECH	0x046d
 #define MX_REVOLUTION	0xc51a	// version RR41.01_B0025
 #define MX_REVOLUTION2	0xc525	// version RQR02.00_B0020
+#define MX_REVOLUTION3	0xc526	// don't know which version this is
 #define MX_5500		0xc71c	// keyboard/mouse combo - experimental
 
 static int first_byte;
@@ -186,6 +187,8 @@ static int open_dev(char *path)
 					if (dinfo.product == (short)MX_REVOLUTION)
 						return fd;
 					if (dinfo.product == (short)MX_REVOLUTION2)
+						return fd;
+					if (dinfo.product == (short)MX_REVOLUTION3)
 						return fd;
 					if (dinfo.product == (short)MX_5500)
 					{
@@ -510,9 +513,11 @@ static void trouble_shooting(void)
 		fd = open(path = "/dev/usb/hiddev0", O_RDWR);
 
 	if (fd != -1)
-		fatal("No Logitech MX-Revolution (%04x:%04x or %04x:%04x) found.",
-						    LOGITECH, MX_REVOLUTION,
-						    LOGITECH, MX_REVOLUTION2);
+		fatal("No Logitech MX-Revolution"
+		      "(%04x:%04x, %04x:%04x, or %04x:%04x) found.",
+		      LOGITECH, MX_REVOLUTION,
+		      LOGITECH, MX_REVOLUTION2,
+		      LOGITECH, MX_REVOLUTION3);
 
 	if (errno == EPERM || errno == EACCES)
 		fatal("No permission to access hiddev (%s-15)\n"
