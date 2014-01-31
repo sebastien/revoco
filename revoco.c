@@ -282,7 +282,7 @@ static int mx_query(int fd, int b1, int *res)
 	res[0] = -1;
 	query_report(fd, 0x10, res, 6);
 
-	if ((res[0] != 0x01 || res[1] != 0x81 || res[2] != 0xb1) && 
+	if ((res[0] != 0x01 || res[1] != 0x81 || res[2] != b1) &&
 	 (res[0] != 0x02 || res[1] != 0x81 || (res[2] != 0x0d && res[2] != 0x08)))
 	{
 		printf("bad answer (%02x %02x %02x...)\n", res[0], res[1], res[2]);
