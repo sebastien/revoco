@@ -61,11 +61,12 @@
 #define streq(a,b)	(strcmp((a), (b)) == 0)
 #define strneq(a,b,c)	(strncmp((a), (b), (c)) == 0)
 
-#define LOGITECH	0x046d
+#define LOGITECH		0x046d
 #define MX_REVOLUTION	0xc51a	// version RR41.01_B0025
 #define MX_REVOLUTION2	0xc525	// version RQR02.00_B0020
 #define MX_REVOLUTION3	0xc526	// don't know which version this is
-#define MX_5500		0xc71c	// keyboard/mouse combo - experimental
+#define MX_REVOLUTION4	0xc52b	// Unifying Receiver (added 2015-05-30)
+#define MX_5500			0xc71c	// keyboard/mouse combo - experimental
 
 static int first_byte;
 
@@ -117,8 +118,8 @@ struct hiddev_usage_ref_multi {
 #define HIDIOCSREPORT		_IOW('H', 0x08, struct hiddev_report_info)
 #define HIDIOCGUSAGES		_IOWR('H', 0x13, struct hiddev_usage_ref_multi)
 #define HIDIOCSUSAGES		_IOW('H', 0x14, struct hiddev_usage_ref_multi)
-#define HIDIOCGFLAG		_IOR('H', 0x0E, int)
-#define HIDIOCSFLAG		_IOW('H', 0x0F, int)
+#define HIDIOCGFLAG			_IOR('H', 0x0E, int)
+#define HIDIOCSFLAG			_IOW('H', 0x0F, int)
 
 #define HIDDEV_FLAG_UREF	0x1
 #define HIDDEV_FLAG_REPORT	0x2
@@ -189,6 +190,8 @@ static int open_dev(char *path)
 					if (dinfo.product == (short)MX_REVOLUTION2)
 						return fd;
 					if (dinfo.product == (short)MX_REVOLUTION3)
+						return fd;
+					if (dinfo.product == (short)MX_REVOLUTION4)
 						return fd;
 					if (dinfo.product == (short)MX_5500)
 					{
@@ -527,10 +530,12 @@ static void trouble_shooting(void)
 
 	if (fd != -1)
 		fatal("No Logitech MX-Revolution"
-		      "(%04x:%04x, %04x:%04x, or %04x:%04x) found.",
+		      "(%04x:%04x, %04x:%04x, %04x:%04x, or %04x:%04x) found.",
 		      LOGITECH, MX_REVOLUTION,
 		      LOGITECH, MX_REVOLUTION2,
-		      LOGITECH, MX_REVOLUTION3);
+		      LOGITECH, MX_REVOLUTION3,
+		      LOGITECH, MX_REVOLUTION4
+			  );
 
 	if (errno == EPERM || errno == EACCES)
 		fatal("No permission to access hiddev (%s-15)\n"
