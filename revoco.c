@@ -66,6 +66,7 @@
 #define MX_REVOLUTION2	0xc525	// version RQR02.00_B0020
 #define MX_REVOLUTION3	0xc526	// don't know which version this is
 #define MX_REVOLUTION4	0xc52b	// Unifying Receiver (added 2015-05-30)
+#define MX_REVOLUTION5	0xb007	// ??? R0019 (added 2015-05-30)
 #define MX_5500			0xc71c	// keyboard/mouse combo - experimental
 
 static int first_byte;
@@ -192,6 +193,8 @@ static int open_dev(char *path)
 					if (dinfo.product == (short)MX_REVOLUTION3)
 						return fd;
 					if (dinfo.product == (short)MX_REVOLUTION4)
+						return fd;
+					if (dinfo.product == (short)MX_REVOLUTION5)
 						return fd;
 					if (dinfo.product == (short)MX_5500)
 					{
@@ -530,11 +533,12 @@ static void trouble_shooting(void)
 
 	if (fd != -1)
 		fatal("No Logitech MX-Revolution"
-		      "(%04x:%04x, %04x:%04x, %04x:%04x, or %04x:%04x) found.",
+		      "(%04x:%04x, %04x:%04x, %04x:%04x, %04x:%04x, or %04x:%04x) found.",
 		      LOGITECH, MX_REVOLUTION,
 		      LOGITECH, MX_REVOLUTION2,
 		      LOGITECH, MX_REVOLUTION3,
-		      LOGITECH, MX_REVOLUTION4
+		      LOGITECH, MX_REVOLUTION4,
+		      LOGITECH, MX_REVOLUTION5
 			  );
 
 	if (errno == EPERM || errno == EACCES)
